@@ -1,32 +1,58 @@
 from app.models.predictor import label_encoders
 
+# Valores alternativos para que la API sea más flexible
+MAPEO_VALORES = {
+    "calidad_combustible": {
+        "alta": "NORMAL",
+        "media": "NORMAL",
+        "baja": "DEGRADADA",
+    },
+    "nivel_aceite": {
+        "bueno": "NORMAL",
+        "regular": "NORMAL",
+        "malo": "DEGRADADA",
+    },
+    "estado_frenos": {
+        "bueno": "NORMAL",
+        "regular": "NORMAL",
+        "malo": "DEGRADADA",
+    },
+    "filtro_aire": {
+        "limpio": "NORMAL",
+        "sucio": "CONTAMINADA",
+    },
+    "condicion_via": {
+        "buena": "NORMAL",
+        "regular": "NORMAL",
+        "mala": "DEGRADADA",
+    }
+}
+
 
 def codificar_datos(datos):
-    """Convierte variables categóricas usando los LabelEncoder guardados.
-
-    Lanza una excepción si una categoría no existe durante el entrenamiento,
-    con un mensaje claro indicando qué columna y valor son problemáticos.
-    """
     for columna, encoder in label_encoders.items():
-        if columna in datos:
-            valor = datos[columna]
-            # Intentar coincidencia exacta primero
-            if valor in encoder.classes_:
-                datos[columna] = encoder.transform([valor])[0]
-            else:
-                # Buscar coincidencia ignorando mayúsculas/minúsculas y espacios
-                valor_normalizado = valor.strip().lower()
-                encontrado = None
-                for clase in encoder.classes_:
-                    if clase.strip().lower() == valor_normalizado:
-                        encontrado = clase
-                        break
+        if columna not in datos:
+            continue
 
-                if encontrado is not None:
-                    datos[columna] = encoder.transform([encontrado])[0]
-                else:
-                    raise ValueError(
-                        f"El valor '{valor}' en la columna '{columna}' no fue visto durante el entrenamiento. "
-                        f"Valores válidos: {list(encoder.classes_)}"
-                    )
+        valor = str(datos[columna]).strip()
+
+        # Buscar si existe un mapeo para ese campo
+        if columna in MAPEO_VALORES:
+            valor = MAPEO_VALORES[columna].get(valor.lower(), valor)
+
+        # Buscar ignorando mayúsculas/minúsculas
+        encontrado = None
+        for clase in encoder.classes_:
+            if clase.strip().lower() == valor.strip().lower():
+                encontrado = clase
+                break
+
+        if encontrado is None:
+            raise ValueError(
+                f"El valor '{valor}' en la columna '{columna}' no es válido. "
+                f"Valores permitidos: {list(encoder.classes_)}"
+            )
+
+        datos[columna] = encoder.transform([encontrado])[0]
+
     return datos
