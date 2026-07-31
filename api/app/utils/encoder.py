@@ -2,30 +2,39 @@ from app.models.predictor import label_encoders
 
 # Valores alternativos para que la API sea más flexible
 MAPEO_VALORES = {
+
     "calidad_combustible": {
         "alta": "NORMAL",
-        "media": "NORMAL",
+        "media": "CONTAMINADA",
         "baja": "DEGRADADA",
     },
+
     "nivel_aceite": {
-        "bueno": "NORMAL",
-        "regular": "NORMAL",
-        "malo": "DEGRADADA",
+        "bueno": "OPTIMO",
+        "regular": "OPTIMO",
+        "malo": "BAJO",
     },
+
     "estado_frenos": {
-        "bueno": "NORMAL",
-        "regular": "NORMAL",
-        "malo": "DEGRADADA",
+        "bueno": "BUENO",
+        "regular": "REGULAR",
+        "malo": "DESGASTADO",
+        "critico": "CRITICO",
     },
+
     "filtro_aire": {
-        "limpio": "NORMAL",
-        "sucio": "CONTAMINADA",
+        "limpio": "LIMPIO",
+        "sucio": "SUCIO",
+        "obstruido": "OBSTRUIDO",
     },
+
     "condicion_via": {
-        "buena": "NORMAL",
-        "regular": "NORMAL",
-        "mala": "DEGRADADA",
+        "buena": "BUENA",
+        "regular": "REGULAR",
+        "mala": "MALA",
+        "muy mala": "MUY MALA",
     }
+
 }
 
 
